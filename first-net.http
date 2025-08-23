@@ -4,4 +4,18 @@ GET {{first_net_HostAddress}}
 
 ###
 POST {{first_net_HostAddress}}/user
+###
+GET {{first_net_HostAddress}}/products
+
+###
+GET {{first_net_HostAddress}}/api/categories
  
+###
+POST  {{first_net_HostAddress}}/api/categories
+###
+PUT  {{first_net_HostAddress}}/api/categories
+ 
+###
+DELETE  {{first_net_HostAddress}}/api/categories
+ 
+
