@@ -8,14 +8,27 @@ POST {{first_net_HostAddress}}/user
 GET {{first_net_HostAddress}}/products
 
 ###
-GET {{first_net_HostAddress}}/api/categories
+GET {{first_net_HostAddress}}/api/categories?searchValue=apple
  
 ###
 POST  {{first_net_HostAddress}}/api/categories
+Content-Type:application/json
+
+{
+    "name" : "apple",
+    "description" : "This the best phone"
+}
+
 ###
-PUT  {{first_net_HostAddress}}/api/categories
+PUT  {{first_net_HostAddress}}/api/categories/3f2504e0-4f89-11d3-9a0c-0305e82c3301
+Content-Type: application/json
+
+{
+         "Name" : "Updated Name",
+         "Description" : "Updated Description"
+}
  
 ###
-DELETE  {{first_net_HostAddress}}/api/categories
+DELETE  {{first_net_HostAddress}}/api/categories/3f2504e0-4f89-11d3-9a0c-0305e82c3301
  
 

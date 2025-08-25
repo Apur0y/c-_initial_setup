@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -45,29 +47,37 @@ var products = new List<Products>() {
     new Products("Samsung", 399),
 };
 
-app.MapGet("/products", () =>
+app.MapGet("/api/categories", ([FromQuery] string searchValue="") =>
 {
-    return Results.Ok(products);
+    Console.WriteLine($"{searchValue}");
+    if (!string.IsNullOrEmpty(searchValue))
+    {
+       var res= categories.Where(c => c.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)).ToList();
+            return Results.Ok(res);
+    }
+    
+    return Results.Ok(categories);
 });
 
-app.MapPost("/api/categories", () =>
+app.MapPost("/api/categories", ([FromBody] Category categoryData) =>
 {
+    // Console.WriteLine($"This is my bojdy: {categoryData}");
     var category = new Category
     {
-        CategoryId = Guid.Parse("3f2504e0-4f89-11d3-9a0c-0305e82c3301"
-),
-        Name = "Samsung",
-        Description = "This the best phone",
+        CategoryId = Guid.Parse("3f2504e0-4f89-11d3-9a0c-0305e82c3301"),
+        Name =categoryData.Name,
+        Description=categoryData.Description,
         CreatedAt = DateTime.Now,
     };
     categories.Add(category);
     return Results.Created($"/api/categories/{category.CategoryId}", category);
+
 }); 
 
-app.MapDelete("/api/categories", () =>
+app.MapDelete("/api/categories/{categoryId}", (Guid categoryId) =>
 {
-    var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == Guid.Parse("3f2504e0-4f89-11d3-9a0c-0305e82c3301"
-));
+    var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == categoryId);
+    Console.WriteLine(foundCategory);
     if (foundCategory is null)
     {
         return Results.NotFound("Category with this id no not");
@@ -76,16 +86,15 @@ app.MapDelete("/api/categories", () =>
     return Results.NoContent();
 }); 
 
-app.MapPut("/api/categories", () =>
+app.MapPut("/api/categories/{categoryId}", (Guid categoryId, [FromBody] Category categoryData) =>
 {
-    var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == Guid.Parse("3f2504e0-4f89-11d3-9a0c-0305e82c3301"
-));
+    var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == categoryId);
     if (foundCategory is null)
     {
         return Results.NotFound("Category with this id no not");
     }
-         foundCategory.Name = "Updated Name";
-         foundCategory.Description = "Updated Description";
+         foundCategory.Name = categoryData.Name;
+         foundCategory.Description = categoryData.Description;
     return Results.NoContent();
 }); 
 
