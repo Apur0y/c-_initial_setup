@@ -17,31 +17,6 @@ app.UseHttpsRedirection();
 
 List<Category> categories = new List<Category>(); 
 
-//REST API 
-app.MapGet("/", () => "Server is running");
-
-app.MapGet("/user", () =>
-{
-    var response = new { message = "This is  a json Object", succces=true};
-
-    return Results.Ok(response);
-});
-
-app.MapPost("/user", () =>
-{
-    return "Hi from POST";
-});
-
-app.MapPut("/user", () =>
-{
-    return "Hi from PUT";
-});
-
-app.MapDelete("/user", () =>
-{
-    return "Hi from DELETE";
-});
-
 var products = new List<Products>() {
     new Products("Apple", 299),
     new Products("Samsung", 399),
@@ -61,10 +36,14 @@ app.MapGet("/api/categories", ([FromQuery] string searchValue="") =>
 
 app.MapPost("/api/categories", ([FromBody] Category categoryData) =>
 {
+    if (string.IsNullOrEmpty(categoryData.Name))
+    {
+        return Results.BadRequest("Catefory name required and not be empty");
+    }
     // Console.WriteLine($"This is my bojdy: {categoryData}");
     var category = new Category
     {
-        CategoryId = Guid.Parse("3f2504e0-4f89-11d3-9a0c-0305e82c3301"),
+        CategoryId = Guid.NewGuid(),
         Name =categoryData.Name,
         Description=categoryData.Description,
         CreatedAt = DateTime.Now,
@@ -74,7 +53,7 @@ app.MapPost("/api/categories", ([FromBody] Category categoryData) =>
 
 }); 
 
-app.MapDelete("/api/categories/{categoryId}", (Guid categoryId) =>
+app.MapDelete("/api/categories/{categoryId:guid}", (Guid categoryId) =>
 {
     var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == categoryId);
     Console.WriteLine(foundCategory);
@@ -89,13 +68,32 @@ app.MapDelete("/api/categories/{categoryId}", (Guid categoryId) =>
 app.MapPut("/api/categories/{categoryId}", (Guid categoryId, [FromBody] Category categoryData) =>
 {
     var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == categoryId);
+    Console.WriteLine(foundCategory);
     if (foundCategory is null)
     {
-        return Results.NotFound("Category with this id no not");
+        return Results.NotFound("Category with this id not found");
     }
-         foundCategory.Name = categoryData.Name;
-         foundCategory.Description = categoryData.Description;
-    return Results.NoContent();
+    if (categoryData is null)
+    {
+        return Results.BadRequest("CategoryData is missing!");
+    }
+    if (!string.IsNullOrEmpty(categoryData.Name))
+    {
+        if (categoryData.Name.Length > 2)
+        {
+
+            foundCategory.Name = categoryData.Name;
+        }
+        else
+        {
+           return Results.BadRequest("Name must be at least two charecter");
+        }
+    }
+    if (!string.IsNullOrEmpty(categoryData.Description))
+    {
+        foundCategory.Description = categoryData.Description;
+    }
+    return Results.Ok(foundCategory);
 }); 
 
 app.Run();
@@ -106,8 +104,8 @@ public record Products(string Name, decimal Price);
 public record Category
 {
     public Guid CategoryId { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
+    public string Name { get; set; }
+    public string? Description { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     
 }

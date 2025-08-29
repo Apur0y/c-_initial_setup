@@ -16,19 +16,18 @@ Content-Type:application/json
 
 {
     "name" : "apple",
-    "description" : "This the best phone"
+    "description":"This is good"
 }
 
 ###
-PUT  {{first_net_HostAddress}}/api/categories/3f2504e0-4f89-11d3-9a0c-0305e82c3301
+PUT  {{first_net_HostAddress}}/api/categories/bffac798-53e3-4032-9e10-a272a6ee76c8
 Content-Type: application/json
 
 {
-         "Name" : "Updated Name",
-         "Description" : "Updated Description"
+         "name" : "a",
+         "description" : "Net Description"
 }
  
 ###
 DELETE  {{first_net_HostAddress}}/api/categories/3f2504e0-4f89-11d3-9a0c-0305e82c3301
  
-
