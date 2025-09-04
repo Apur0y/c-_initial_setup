@@ -18,21 +18,28 @@ namespace first_net.Controlers
         [HttpGet]
         public IActionResult GetCategories([FromQuery] string searchValue = "")
         {
-            Console.WriteLine($"{searchValue}");
-            if (!string.IsNullOrEmpty(searchValue))
-            {
-                var res = categories.Where(c => c.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)).ToList();
-                return Ok(res);
-            }
+            // Console.WriteLine($"{searchValue}");
+            // if (!string.IsNullOrEmpty(searchValue))
+            // {
+            //     var res = categories.Where(c => c.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)).ToList();
+            //     return Ok(res);
+            // }
 
-            return Ok(categories);
+            var categoryList = categories.Select(c=>new CategoryReadDto{
+                CategoryId=c.CategoryId,
+                Name=c.Name,
+                Description=c.Description,
+                CreatedAt=c.CreatedAt
+            }).ToList();
+
+            return Ok(categoryList);
         }
 
 
 
         //POST: /api/categoris=>Read categories
         [HttpPost]
-        public IActionResult CreateCategories([FromBody] Category categoryData)
+        public IActionResult CreateCategories([FromBody] CategoryCreateDto categoryData)
         {
 
             if (string.IsNullOrEmpty(categoryData.Name))
@@ -72,7 +79,7 @@ namespace first_net.Controlers
 
         //PUT: /api/categoris=>Read categories
         [HttpPut("{categoryId:guid}")]
-        public IActionResult UpdateCategories(Guid categoryId, [FromBody] Category categoryData)
+        public IActionResult UpdateCategories(Guid categoryId, [FromBody] CategoryUpdateDto categoryData)
         {
              var foundCategory = categories.FirstOrDefault(Category => Category.CategoryId == categoryId);
     Console.WriteLine(foundCategory);
